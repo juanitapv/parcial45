@@ -9,7 +9,7 @@ def hello_world():
 from markupsafe import escape
 
 @app.route("/<name>")
-def hello(name):
+def hello3(name):
     return f"Hello, {escape(name)}!"
 
 @app.route('/')
@@ -17,7 +17,7 @@ def index():
     return 'Index Page'
 
 @app.route('/hello')
-def hello():
+def hello4():
     return 'Hello, World'
 
 from markupsafe import escape
@@ -48,7 +48,7 @@ def about():
 from flask import url_for
 
 @app.route('/')
-def index():
+def index2():
     return 'index'
 
 @app.route('/login')
@@ -71,7 +71,7 @@ do_the_login = None
 show_the_login_form = None
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login2():
     if request.method == 'POST':
         return do_the_login()
     else:
@@ -91,5 +91,33 @@ from flask import render_template
 
 @app.route('/hello/')
 @app.route('/hello/<name>')
-def hello(name=None):
+def hello2(name=None):
     return render_template('hello.html', person=name)
+
+from flask import request
+
+with app.test_request_context('/hello', method='POST'):
+    # now you can do something with the request until the
+    # end of the with block, such as basic assertions:
+    assert request.path == '/hello'
+    assert request.method == 'POST'
+
+from flask import request
+
+
+
+valid_login = None
+log_the_user_in = None
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if valid_login(request.form['username'],
+                       request.form['password']):
+            return log_the_user_in(request.form['username'])
+        else:
+            error = 'Invalid username/password'
+    # the code below is executed if the request method
+    # was GET or the credentials were invalid
+    return render_template('login.html', error=error)
+
